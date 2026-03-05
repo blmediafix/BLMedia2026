@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BLMediaFix | IT Repair & Solutions Center</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #080808;
+      --bg2:       #0e0e0e;
+      --bg3:       #161616;
+      --bg4:       #1c1c1c;
+      --border:    #252525;
+      --border2:   #2e2e2e;
+
+      /* dark lemon-green accent family */
+      --accent:    #b8f020;   /* dark lemon-green primary */
+      --accent2:   #94c918;   /* deeper lime press */
+      --accent3:   #d4f75a;   /* lighter pop for text moments */
+      --accentGlow: rgba(184,240,32,.18);
+
+      --text:      #f2f2f2;
+      --text2:     #c8c8c8;
+      --muted:     #666666;
+      --muted2:    #4a4a4a;
+      --card:      #0b0b0b;
+      --white:     #ffffff;
+
+      --radius:    12px;
+      --font-head: 'Syne', sans-serif;
+      --font-body: 'DM Sans', sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-body);
+      font-size: 16px;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* ── SCROLLBAR ── */
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--accent2); border-radius: 3px; }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.1rem 5%;
+      background: rgba(8,8,8,0.90);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo {
+      font-family: var(--font-head);
+      font-size: 1.3rem; font-weight: 800; letter-spacing: -0.02em;
+      color: var(--white); text-decoration: none;
+    }
+    .nav-logo span { color: var(--accent); }
+    .nav-links { display: flex; gap: 2rem; list-style: none; }
+    .nav-links a {
+      color: var(--muted); text-decoration: none; font-size: 0.88rem;
+      font-weight: 500; letter-spacing: 0.05em; text-transform: uppercase;
+      transition: color .2s;
+    }
+    .nav-links a:hover { color: var(--accent); }
+    .nav-cta {
+      background: var(--accent); color: #080808; padding: .5rem 1.3rem;
+      border-radius: 6px; font-weight: 800; font-size: 0.82rem;
+      text-decoration: none; letter-spacing: 0.05em; text-transform: uppercase;
+      transition: background .2s, box-shadow .2s;
+      box-shadow: 0 0 20px rgba(184,240,32,.22);
+    }
+    .nav-cta:hover { background: var(--accent3); box-shadow: 0 0 32px rgba(184,240,32,.40); }
+
+    /* hamburger */
+    .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; }
+    .hamburger span { display: block; width: 24px; height: 2px; background: var(--text); border-radius: 2px; }
+    .mobile-menu {
+      display: none; position: fixed; top: 64px; left: 0; right: 0;
+      background: rgba(8,8,8,0.98); backdrop-filter: blur(20px);
+      padding: 2rem 5%; flex-direction: column; gap: 1.5rem; z-index: 99;
+      border-bottom: 1px solid var(--border);
+    }
+    .mobile-menu.open { display: flex; }
+    .mobile-menu a { color: var(--text); text-decoration: none; font-size: 1.1rem; font-weight: 500; }
+
+    /* ── HERO ── */
+    #hero {
+      min-height: 100vh; display: flex; align-items: center;
+      position: relative; overflow: hidden;
+      padding: 8rem 5% 5rem;
+    }
+
+    /* Milky Way base image */
+    #hero::after {
+      content: '';
+      position: absolute; inset: 0; z-index: 0;
+      background-image: url('https://images.unsplash.com/photo-1519681393784-d120267933ba?w=1600&q=80');
+      background-size: cover;
+      background-position: center 40%;
+    }
+
+    /* Dark overlay — heavily desaturated with lemon-green tint at horizon */
+    .hero-overlay {
+      position: absolute; inset: 0; z-index: 1;
+      background:
+        linear-gradient(
+          170deg,
+          rgba(8,8,8,0.88)   0%,
+          rgba(10,20,4,0.60)  35%,
+          rgba(30,60,8,0.28)  58%,
+          rgba(15,35,4,0.15)  72%,
+          rgba(8,8,8,0.90)   100%
+        );
+    }
+
+    /* lemon-green grid pulse */
+    .hero-grid {
+      position: absolute; inset: 0; z-index: 2;
+      background-image:
+        linear-gradient(rgba(184,240,32,.045) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(184,240,32,.045) 1px, transparent 1px);
+      background-size: 56px 56px;
+      mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%);
+      animation: gridPulse 9s ease-in-out infinite alternate;
+    }
+    @keyframes gridPulse { from { opacity:.35; } to { opacity: 1; } }
+
+    /* orbs in lemon-green */
+    .orb {
+      position: absolute; border-radius: 50%;
+      filter: blur(110px); pointer-events: none; z-index: 2;
+    }
+    .orb1 {
+      width: 560px; height: 560px;
+      background: radial-gradient(circle, rgba(148,201,24,.14), transparent 70%);
+      top: -130px; right: -130px;
+      animation: floatOrb 13s ease-in-out infinite;
+    }
+    .orb2 {
+      width: 380px; height: 380px;
+      background: radial-gradient(circle, rgba(184,240,32,.10), transparent 70%);
+      bottom: 0; left: -80px;
+      animation: floatOrb 17s ease-in-out infinite reverse;
+    }
+    .orb3 {
+      width: 260px; height: 260px;
+      background: radial-gradient(circle, rgba(212,247,90,.06), transparent 70%);
+      bottom: 28%; right: 18%;
+      animation: floatOrb 22s ease-in-out infinite;
+    }
+    @keyframes floatOrb {
+      0%,100% { transform: translate(0,0); }
+      50%      { transform: translate(28px,-38px); }
+    }
+
+    .hero-inner { position: relative; z-index: 3; max-width: 900px; }
+
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: .55rem;
+      background: rgba(184,240,32,.08); border: 1px solid rgba(184,240,32,.28);
+      padding: .35rem .95rem; border-radius: 100px;
+      font-size: .77rem; font-weight: 600; color: var(--accent);
+      letter-spacing: .08em; text-transform: uppercase; margin-bottom: 1.8rem;
+      animation: fadeUp .6s ease both;
+    }
+    .hero-badge::before {
+      content: ''; width: 7px; height: 7px; border-radius: 50%;
+      background: var(--accent); animation: blink 1.6s infinite;
+    }
+    @keyframes blink { 0%,100% { opacity:1; } 50% { opacity:.15; } }
+
+    h1 {
+      font-family: var(--font-head);
+      font-size: clamp(2.6rem, 7vw, 5.5rem);
+      font-weight: 800; line-height: 1.05; letter-spacing: -0.03em;
+      margin-bottom: 1.2rem;
+      color: var(--white);
+      animation: fadeUp .7s .1s ease both;
+      text-shadow: 0 2px 50px rgba(0,0,0,.8);
+    }
+    h1 .accent-line { color: var(--accent); }
+
+    .hero-tagline {
+      font-size: clamp(1rem, 2.2vw, 1.22rem);
+      color: rgba(242,242,242,.62); max-width: 560px; font-weight: 300;
+      margin-bottom: 2.8rem; line-height: 1.68;
+      animation: fadeUp .7s .2s ease both;
+      text-shadow: 0 1px 14px rgba(0,0,0,.7);
+    }
+
+    .hero-actions {
+      display: flex; gap: 1rem; flex-wrap: wrap;
+      animation: fadeUp .7s .3s ease both;
+    }
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: .5rem;
+      background: var(--accent); color: #080808; padding: .88rem 2rem;
+      border-radius: 8px; font-weight: 800; font-size: .95rem;
+      text-decoration: none; transition: background .2s, box-shadow .2s, transform .2s;
+      box-shadow: 0 0 32px rgba(184,240,32,.25);
+    }
+    .btn-primary:hover { background: var(--accent3); transform: translateY(-2px); box-shadow: 0 0 48px rgba(184,240,32,.45); }
+    .btn-secondary {
+      display: inline-flex; align-items: center; gap: .5rem;
+      background: rgba(255,255,255,.05); color: var(--text2); padding: .88rem 2rem;
+      border-radius: 8px; font-weight: 500; font-size: .95rem;
+      text-decoration: none; border: 1px solid var(--border2);
+      transition: border-color .2s, color .2s, background .2s;
+      backdrop-filter: blur(8px);
+    }
+    .btn-secondary:hover { border-color: var(--accent); color: var(--accent); background: rgba(184,240,32,.05); }
+
+    .hero-stats {
+      display: flex; gap: 3rem; margin-top: 4rem; flex-wrap: wrap;
+      animation: fadeUp .7s .4s ease both;
+    }
+    .stat-num {
+      font-family: var(--font-head); font-size: 2rem; font-weight: 800;
+      color: var(--accent); display: block; line-height: 1.1;
+    }
+    .stat-label { font-size: .78rem; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; margin-top: .2rem; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(22px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── MARQUEE STRIP ── */
+    .services-strip {
+      background: var(--bg2);
+      border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
+      padding: 1.15rem 0; display: flex; align-items: center; overflow: hidden;
+    }
+    .strip-track {
+      display: flex; gap: 3rem; white-space: nowrap;
+      animation: marquee 30s linear infinite;
+    }
+    @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+    .strip-item {
+      display: inline-flex; align-items: center; gap: .6rem;
+      color: var(--muted); font-size: .80rem; font-weight: 500;
+      letter-spacing: .09em; text-transform: uppercase;
+    }
+    .strip-item span { color: var(--accent); font-size: .65rem; }
+
+    /* ── SHARED SECTION ── */
+    section { padding: 6rem 5%; }
+    .section-label {
+      font-size: .74rem; font-weight: 700; letter-spacing: .18em;
+      text-transform: uppercase; color: var(--accent);
+      margin-bottom: .75rem; display: block;
+    }
+    h2 {
+      font-family: var(--font-head); font-size: clamp(1.8rem, 4vw, 3rem);
+      font-weight: 800; letter-spacing: -0.025em; line-height: 1.08;
+      margin-bottom: 1rem; color: var(--white);
+    }
+    .section-intro { color: var(--muted); max-width: 560px; font-size: 1rem; line-height: 1.72; }
+
+    /* ── ABOUT ── */
+    #about { background: var(--bg2); }
+    .about-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 5rem; align-items: center; margin-top: 3.5rem;
+    }
+    .about-visual { position: relative; }
+    .about-img-wrap {
+      width: 100%; aspect-ratio: 4/3; border-radius: var(--radius);
+      overflow: hidden; background: var(--bg3);
+      border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center; position: relative;
+    }
+    .about-img-wrap::before {
+      content: ''; position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse at 30% 40%, rgba(184,240,32,.07) 0%, transparent 60%),
+        radial-gradient(ellipse at 70% 70%, rgba(148,201,24,.05) 0%, transparent 60%);
+    }
+    .circuit-svg { width: 68%; opacity: .28; }
+    .about-badge-float {
+      position: absolute; bottom: -18px; right: -18px;
+      background: var(--card); border: 1px solid var(--border2);
+      border-radius: var(--radius); padding: 1rem 1.4rem;
+      display: flex; align-items: center; gap: .8rem;
+      box-shadow: 0 8px 40px rgba(0,0,0,.7);
+    }
+    .badge-icon { font-size: 1.6rem; }
+    .badge-text { font-size: .78rem; color: var(--muted); }
+    .badge-text strong { display: block; font-family: var(--font-head); font-size: 1rem; color: var(--white); }
+
+    .about-content p { color: var(--muted); line-height: 1.78; margin-bottom: 1rem; }
+    .about-content p strong { color: var(--text2); }
+
+    .services-list { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 2rem; }
+    .service-card {
+      background: var(--bg3); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 1.25rem;
+      transition: border-color .25s, transform .25s, background .25s;
+    }
+    .service-card:hover {
+      border-color: var(--accent); transform: translateY(-3px);
+      background: rgba(184,240,32,.04);
+    }
+    .service-icon { font-size: 1.4rem; margin-bottom: .5rem; }
+    .service-card h4 { font-family: var(--font-head); font-size: .9rem; margin-bottom: .3rem; color: var(--white); }
+    .service-card p { font-size: .8rem; color: var(--muted); margin: 0; }
+
+    /* ── GALLERY ── */
+    #gallery { background: var(--bg); }
+    .gallery-header { margin-bottom: 3rem; }
+    .gallery-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem; }
+    .gallery-item {
+      border-radius: var(--radius); overflow: hidden;
+      border: 1px solid var(--border); background: var(--bg3);
+      position: relative; aspect-ratio: 4/3;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; transition: transform .3s, border-color .3s;
+    }
+    .gallery-item:hover { transform: scale(1.02); border-color: rgba(184,240,32,.40); }
+    .gallery-item:hover .gallery-overlay { opacity: 1; }
+    .gallery-item.large { grid-column: span 2; aspect-ratio: 16/9; }
+    .gallery-item.tall  { grid-row: span 2; aspect-ratio: unset; }
+
+    /* pure dark grayscale placeholder gradients */
+    .gi1::before { content:''; position:absolute; inset:0; background: linear-gradient(135deg,#0e0e0e,#1a1a1a); }
+    .gi2::before { content:''; position:absolute; inset:0; background: linear-gradient(135deg,#0a0a0a,#161616); }
+    .gi3::before { content:''; position:absolute; inset:0; background: linear-gradient(135deg,#111111,#1e1e1e); }
+    .gi4::before { content:''; position:absolute; inset:0; background: linear-gradient(135deg,#0c0c0c,#181818); }
+    .gi5::before { content:''; position:absolute; inset:0; background: linear-gradient(135deg,#101010,#1c1c1c); }
+    .gi6::before { content:''; position:absolute; inset:0; background: linear-gradient(135deg,#0e0e0e,#1a1a1a); }
+
+    .gallery-placeholder { position:relative; z-index:1; text-align:center; padding:1.5rem; }
+    .gallery-placeholder .ph-icon { font-size:2.5rem; margin-bottom:.6rem; opacity:.5; }
+    .gallery-placeholder p { font-size:.76rem; color:var(--muted); font-weight:500; letter-spacing:.07em; text-transform:uppercase; }
+
+    .gallery-overlay {
+      position:absolute; inset:0; background:rgba(184,240,32,.05);
+      display:flex; align-items:flex-end; padding:1.2rem;
+      opacity:0; transition:opacity .3s; z-index:2;
+    }
+    .overlay-label {
+      background:rgba(8,8,8,.82); backdrop-filter:blur(10px);
+      border:1px solid rgba(184,240,32,.22); border-radius:6px;
+      padding:.4rem .85rem; font-size:.74rem; color:var(--accent);
+      font-weight:700; letter-spacing:.07em;
+    }
+
+    /* ── TESTIMONIALS ── */
+    #testimonials { background: var(--bg2); }
+    .testi-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1.5rem; margin-top:3rem; }
+    .testi-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 2rem;
+      position: relative; transition: border-color .25s, transform .25s;
+    }
+    .testi-card:hover { border-color: rgba(184,240,32,.30); transform: translateY(-4px); }
+    .testi-card::before {
+      content: '\201C';
+      font-family: var(--font-head); font-size: 5rem; font-weight: 800;
+      color: var(--accent); opacity: .12;
+      position: absolute; top: .5rem; left: 1.2rem; line-height: 1;
+    }
+    .testi-text { font-size: .92rem; color: var(--muted); line-height: 1.72; margin-bottom: 1.5rem; font-style: italic; position: relative; z-index: 1; }
+    .testi-author { display: flex; align-items: center; gap: .85rem; }
+    .author-avatar {
+      width: 40px; height: 40px; border-radius: 50%;
+      background: linear-gradient(135deg, #1c1c1c, #2e2e2e);
+      border: 1.5px solid var(--accent);
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--font-head); font-weight: 800; font-size: .82rem;
+      color: var(--accent); flex-shrink: 0;
+    }
+    .author-name { font-weight: 600; font-size: .88rem; color: var(--white); }
+    .author-role  { font-size: .74rem; color: var(--muted); }
+    .stars { color: var(--accent); font-size: .85rem; margin-bottom: 1rem; letter-spacing: 2px; }
+
+    /* ── CONTACT ── */
+    #contact { background: var(--bg); }
+    .contact-grid { display:grid; grid-template-columns:1fr 1.3fr; gap:5rem; margin-top:3.5rem; align-items:start; }
+    .contact-info p { color: var(--muted); line-height: 1.75; margin-bottom: 2rem; }
+    .contact-details { display:flex; flex-direction:column; gap:1.1rem; }
+    .contact-item {
+      display: flex; align-items: flex-start; gap: 1rem;
+      padding: 1rem 1.2rem; background: var(--bg3);
+      border: 1px solid var(--border); border-radius: var(--radius);
+      transition: border-color .2s;
+    }
+    .contact-item:hover { border-color: var(--border2); }
+    .contact-item-icon {
+      width: 38px; height: 38px; border-radius: 8px;
+      background: rgba(184,240,32,.08); border: 1px solid rgba(184,240,32,.18);
+      display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0;
+    }
+    .contact-item-text .label { font-size: .70rem; color: var(--muted2); text-transform: uppercase; letter-spacing: .09em; }
+    .contact-item-text .value { font-size: .9rem; color: var(--text2); font-weight: 500; }
+
+    form { display: flex; flex-direction: column; gap: 1rem; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    label { display: block; font-size: .74rem; color: var(--muted); margin-bottom: .4rem; text-transform: uppercase; letter-spacing: .07em; }
+    input, textarea, select {
+      width: 100%; background: var(--bg3); border: 1px solid var(--border);
+      border-radius: 8px; padding: .85rem 1rem; color: var(--text);
+      font-family: var(--font-body); font-size: .93rem;
+      transition: border-color .2s, box-shadow .2s; outline: none;
+    }
+    input:focus, textarea:focus, select:focus {
+      border-color: var(--accent); box-shadow: 0 0 0 3px rgba(184,240,32,.09);
+    }
+    input::placeholder, textarea::placeholder { color: var(--muted2); }
+    textarea { resize: vertical; min-height: 130px; }
+    select { appearance: none; cursor: pointer; }
+    option { background: var(--bg3); color: var(--text); }
+    .submit-btn {
+      background: var(--accent); color: #080808; border: none; cursor: pointer;
+      padding: 1rem 2.1rem; border-radius: 8px; font-weight: 800; font-size: .95rem;
+      font-family: var(--font-body); transition: background .2s, transform .2s, box-shadow .2s;
+      box-shadow: 0 0 28px rgba(184,240,32,.18); align-self: flex-start;
+      display: flex; align-items: center; gap: .5rem;
+    }
+    .submit-btn:hover { background: var(--accent3); transform: translateY(-2px); box-shadow: 0 0 42px rgba(184,240,32,.38); }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--bg2); border-top: 1px solid var(--border);
+      padding: 3rem 5%; text-align: center;
+    }
+    .footer-logo { font-family: var(--font-head); font-size: 1.4rem; font-weight: 800; color: var(--white); margin-bottom: .5rem; }
+    .footer-logo span { color: var(--accent); }
+    .footer-tagline { color: var(--muted); font-size: .84rem; margin-bottom: 1.5rem; }
+    .footer-links { display: flex; gap: 2rem; justify-content: center; flex-wrap: wrap; margin-bottom: 1.5rem; list-style: none; }
+    .footer-links a { color: var(--muted); text-decoration: none; font-size: .82rem; transition: color .2s; }
+    .footer-links a:hover { color: var(--accent); }
+    .footer-copy { font-size: .76rem; color: var(--muted2); }
+
+    /* accent line under footer logo */
+    .footer-line {
+      width: 36px; height: 2px; background: var(--accent); margin: 0 auto .8rem;
+      border-radius: 2px;
+    }
+
+    .divider { height: 1px; background: linear-gradient(90deg, transparent, var(--border2), transparent); margin: 0 5%; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      .nav-links, .nav-cta { display: none; }
+      .hamburger { display: flex; }
+      .about-grid, .contact-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+      .testi-grid { grid-template-columns: 1fr; }
+      .gallery-grid { grid-template-columns: 1fr 1fr; }
+      .gallery-item.large { grid-column: span 2; }
+      .gallery-item.tall  { grid-row: auto; }
+      .form-row { grid-template-columns: 1fr; }
+      .services-list { grid-template-columns: 1fr; }
+      .hero-stats { gap: 2rem; }
+      .about-badge-float { right: 0; bottom: -14px; }
+    }
+    @media (max-width: 540px) {
+      section { padding: 4rem 5%; }
+      .gallery-grid { grid-template-columns: 1fr; }
+      .gallery-item.large { grid-column: span 1; }
+      nav { padding: 1rem 5%; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="#hero">BL<span>Media</span>Fix</a>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#gallery">Gallery</a></li>
+    <li><a href="#testimonials">Reviews</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <a class="nav-cta" href="#contact">Get a Quote</a>
+  <div class="hamburger" id="hamburger" onclick="toggleMenu()">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#about" onclick="toggleMenu()">About</a>
+  <a href="#gallery" onclick="toggleMenu()">Gallery</a>
+  <a href="#testimonials" onclick="toggleMenu()">Reviews</a>
+  <a href="#contact" onclick="toggleMenu()">Contact</a>
+  <a href="#contact" onclick="toggleMenu()" style="color:var(--accent);font-weight:800;">Get a Quote →</a>
+</div>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-overlay"></div>
+  <div class="hero-grid"></div>
+  <div class="orb orb1"></div>
+  <div class="orb orb2"></div>
+  <div class="orb orb3"></div>
+  <div class="hero-inner">
+    <div class="hero-badge">Your Full IT Solution Partner</div>
+    <h1>
+      We Fix, Upgrade &amp;<br>
+      <span class="accent-line">Power</span> Your Tech.
+    </h1>
+    <p class="hero-tagline">
+      BLMediaFix is Johannesburg's trusted IT repair center specialising in computer &amp; laptop repairs, hardware upgrades, software solutions, and consumables — all under one roof.
+    </p>
+    <div class="hero-actions">
+      <a class="btn-primary" href="#contact">&#128222; Book a Repair</a>
+      <a class="btn-secondary" href="#about">Learn More ↓</a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat-item"><span class="stat-num">500+</span><span class="stat-label">Devices Repaired</span></div>
+      <div class="stat-item"><span class="stat-num">8+</span><span class="stat-label">Years Experience</span></div>
+      <div class="stat-item"><span class="stat-num">98%</span><span class="stat-label">Client Satisfaction</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- MARQUEE STRIP -->
+<div class="services-strip">
+  <div class="strip-track">
+    <span class="strip-item"><span>✦</span> Hardware Repairs</span>
+    <span class="strip-item"><span>✦</span> Software Solutions</span>
+    <span class="strip-item"><span>✦</span> RAM &amp; SSD Upgrades</span>
+    <span class="strip-item"><span>✦</span> Virus Removal</span>
+    <span class="strip-item"><span>✦</span> Laptop Screen Repair</span>
+    <span class="strip-item"><span>✦</span> Printers &amp; Consumables</span>
+    <span class="strip-item"><span>✦</span> IT Consulting</span>
+    <span class="strip-item"><span>✦</span> Data Recovery</span>
+    <span class="strip-item"><span>✦</span> Network Setup</span>
+    <span class="strip-item"><span>✦</span> Hardware Repairs</span>
+    <span class="strip-item"><span>✦</span> Software Solutions</span>
+    <span class="strip-item"><span>✦</span> RAM &amp; SSD Upgrades</span>
+    <span class="strip-item"><span>✦</span> Virus Removal</span>
+    <span class="strip-item"><span>✦</span> Laptop Screen Repair</span>
+    <span class="strip-item"><span>✦</span> Printers &amp; Consumables</span>
+    <span class="strip-item"><span>✦</span> IT Consulting</span>
+    <span class="strip-item"><span>✦</span> Data Recovery</span>
+    <span class="strip-item"><span>✦</span> Network Setup</span>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<section id="about">
+  <span class="section-label">Who We Are</span>
+  <div class="about-grid">
+    <div class="about-visual">
+      <div class="about-img-wrap">
+        <svg class="circuit-svg" viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg">
+          <g stroke="#b8f020" stroke-width="1" fill="none" opacity="0.9">
+            <rect x="10" y="10" width="180" height="130" rx="4"/>
+            <line x1="40" y1="10" x2="40" y2="140"/>
+            <line x1="80" y1="10" x2="80" y2="140"/>
+            <line x1="120" y1="10" x2="120" y2="140"/>
+            <line x1="160" y1="10" x2="160" y2="140"/>
+            <line x1="10" y1="40" x2="190" y2="40"/>
+            <line x1="10" y1="75" x2="190" y2="75"/>
+            <line x1="10" y1="110" x2="190" y2="110"/>
+            <rect x="55" y="55" width="30" height="20" rx="2"/>
+            <rect x="115" y="55" width="30" height="20" rx="2"/>
+            <rect x="85" y="90" width="30" height="20" rx="2"/>
+            <circle cx="40" cy="40" r="4" fill="#b8f020"/>
+            <circle cx="80" cy="75" r="4" fill="#b8f020"/>
+            <circle cx="120" cy="40" r="4" fill="#b8f020"/>
+            <circle cx="160" cy="110" r="4" fill="#b8f020"/>
+            <circle cx="40" cy="110" r="4" fill="#94c918"/>
+            <circle cx="160" cy="75" r="4" fill="#94c918"/>
+          </g>
+        </svg>
+      </div>
+      <div class="about-badge-float">
+        <div class="badge-icon">🏆</div>
+        <div class="badge-text">
+          <strong>Certified Technicians</strong>
+          CompTIA A+ &amp; Microsoft
+        </div>
+      </div>
+    </div>
+    <div class="about-content">
+      <h2>Johannesburg's Go-To IT Solution Center</h2>
+      <p><strong>BLMediaFix</strong> was founded with a simple mission: give individuals and businesses access to <strong>expert, honest, and affordable IT support</strong> — without the runaround.</p>
+      <p>Whether you're a student with a broken laptop, a small business needing network setup, or an enterprise looking for a reliable IT consultant, we have the skills, tools, and experience to solve your tech problems fast.</p>
+      <p>We stock quality <strong>computers, laptops, printers, toner cartridges, cables, and accessories</strong> — everything you need to keep your workspace running at full capacity.</p>
+      <div class="services-list">
+        <div class="service-card"><div class="service-icon">🔧</div><h4>Hardware Repair</h4><p>Motherboards, screens, keyboards, power supplies &amp; more.</p></div>
+        <div class="service-card"><div class="service-icon">💾</div><h4>Upgrades</h4><p>SSD, RAM, GPU upgrades to breathe new life into your machine.</p></div>
+        <div class="service-card"><div class="service-icon">🖥️</div><h4>Software &amp; OS</h4><p>Windows installs, virus removal, driver fixes, Office setup.</p></div>
+        <div class="service-card"><div class="service-icon">🖨️</div><h4>Consumables</h4><p>Toners, cartridges, cables, peripherals &amp; accessories.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- GALLERY -->
+<section id="gallery">
+  <div class="gallery-header">
+    <span class="section-label">Our Work</span>
+    <h2>Inside BLMediaFix</h2>
+    <p class="section-intro">A glimpse into our workshop, team, and the devices we breathe new life into every day.</p>
+  </div>
+  <div class="gallery-grid">
+    <div class="gallery-item large gi1">
+      <div class="gallery-placeholder"><div class="ph-icon">🖥️</div><p>Workshop &amp; Repair Bay</p></div>
+      <div class="gallery-overlay"><span class="overlay-label">Main Workshop</span></div>
+    </div>
+    <div class="gallery-item gi2">
+      <div class="gallery-placeholder"><div class="ph-icon">💻</div><p>Laptop Diagnostics</p></div>
+      <div class="gallery-overlay"><span class="overlay-label">Laptop Repairs</span></div>
+    </div>
+    <div class="gallery-item tall gi3">
+      <div class="gallery-placeholder"><div class="ph-icon">🔬</div><p>Component Testing</p></div>
+      <div class="gallery-overlay"><span class="overlay-label">Hardware Lab</span></div>
+    </div>
+    <div class="gallery-item gi4">
+      <div class="gallery-placeholder"><div class="ph-icon">📦</div><p>Stock &amp; Consumables</p></div>
+      <div class="gallery-overlay"><span class="overlay-label">Retail Stock</span></div>
+    </div>
+    <div class="gallery-item gi5">
+      <div class="gallery-placeholder"><div class="ph-icon">🖨️</div><p>Printer Servicing</p></div>
+      <div class="gallery-overlay"><span class="overlay-label">Printer Repairs</span></div>
+    </div>
+    <div class="gallery-item large gi6">
+      <div class="gallery-placeholder"><div class="ph-icon">👨‍💻</div><p>Client Consultation &amp; IT Advisory</p></div>
+      <div class="gallery-overlay"><span class="overlay-label">IT Consulting</span></div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- TESTIMONIALS -->
+<section id="testimonials">
+  <span class="section-label">Client Reviews</span>
+  <h2>What Our Clients Say</h2>
+  <p class="section-intro">Don't take our word for it — hear from the businesses and individuals we've helped.</p>
+  <div class="testi-grid">
+    <div class="testi-card">
+      <div class="stars">★★★★★</div>
+      <p class="testi-text">"BLMediaFix saved our office when our server crashed the day before a major client presentation. They had us back up and running within hours. Absolutely phenomenal service, I cannot recommend them enough."</p>
+      <div class="testi-author">
+        <div class="author-avatar">TM</div>
+        <div class="author-info"><div class="author-name">Thabo Mokoena</div><div class="author-role">CEO, Mokoena Consulting</div></div>
+      </div>
+    </div>
+    <div class="testi-card">
+      <div class="stars">★★★★★</div>
+      <p class="testi-text">"I brought in my old laptop which was running painfully slow. They upgraded the RAM and swapped in an SSD — it now runs faster than when it was brand new. Great price, quick turnaround, and very professional."</p>
+      <div class="testi-author">
+        <div class="author-avatar">SN</div>
+        <div class="author-info"><div class="author-name">Samantha Nkosi</div><div class="author-role">University Student, UJ</div></div>
+      </div>
+    </div>
+    <div class="testi-card">
+      <div class="stars">★★★★★</div>
+      <p class="testi-text">"We've been using BLMediaFix for all our company's IT needs for over two years. From sourcing equipment to maintaining our network, they are reliable, knowledgeable, and always go the extra mile for us."</p>
+      <div class="testi-author">
+        <div class="author-avatar">PD</div>
+        <div class="author-info"><div class="author-name">Priya Dlamini</div><div class="author-role">Operations Manager, RetailPro SA</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <span class="section-label">Get In Touch</span>
+  <h2>Let's Fix It Together</h2>
+  <p class="section-intro">Fill out the form and one of our technicians will get back to you within 2 hours during business hours.</p>
+  <div class="contact-grid">
+    <div class="contact-info">
+      <p>Whether you need a quick repair, a hardware upgrade quote, bulk consumables, or full IT consulting for your business — we're ready to help. Walk in or contact us below.</p>
+      <div class="contact-details">
+        <div class="contact-item">
+          <div class="contact-item-icon">📍</div>
+          <div class="contact-item-text"><div class="label">Location</div><div class="value">Johannesburg, Gauteng, South Africa</div></div>
+        </div>
+        <div class="contact-item">
+          <div class="contact-item-icon">📞</div>
+          <div class="contact-item-text"><div class="label">Phone / WhatsApp</div><div class="value">+27 (0)11 000 0000</div></div>
+        </div>
+        <div class="contact-item">
+          <div class="contact-item-icon">✉️</div>
+          <div class="contact-item-text"><div class="label">Email</div><div class="value">info@blmediafix.co.za</div></div>
+        </div>
+        <div class="contact-item">
+          <div class="contact-item-icon">🕐</div>
+          <div class="contact-item-text"><div class="label">Hours</div><div class="value">Mon–Fri: 8am–6pm &nbsp;|&nbsp; Sat: 9am–2pm</div></div>
+        </div>
+      </div>
+    </div>
+    <form onsubmit="handleSubmit(event)">
+      <div class="form-row">
+        <div><label for="name">Full Name</label><input id="name" type="text" placeholder="John Doe" required/></div>
+        <div><label for="phone">Phone Number</label><input id="phone" type="tel" placeholder="+27 82 000 0000"/></div>
+      </div>
+      <div><label for="email">Email Address</label><input id="email" type="email" placeholder="john@example.com" required/></div>
+      <div>
+        <label for="service">Service Required</label>
+        <select id="service">
+          <option value="">— Select a service —</option>
+          <option>Hardware Repair</option>
+          <option>Software / OS Issues</option>
+          <option>Laptop Screen Replacement</option>
+          <option>RAM / SSD Upgrade</option>
+          <option>Virus Removal</option>
+          <option>Printer Repair &amp; Consumables</option>
+          <option>Data Recovery</option>
+          <option>Network Setup</option>
+          <option>IT Consulting</option>
+          <option>Purchase Equipment</option>
+          <option>Other</option>
+        </select>
+      </div>
+      <div><label for="message">Describe Your Issue</label><textarea id="message" placeholder="Tell us what's going on with your device or what you need..." required></textarea></div>
+      <button type="submit" class="submit-btn">&#9993; Send Message</button>
+      <p id="form-success" style="display:none;color:var(--accent);font-size:.9rem;margin-top:.5rem;">✅ Message sent! We'll be in touch shortly.</p>
+    </form>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">BL<span>Media</span>Fix</div>
+  <div class="footer-line"></div>
+  <p class="footer-tagline">Your Full IT Solution — Repair · Upgrade · Consult · Supply</p>
+  <ul class="footer-links">
+    <li><a href="#hero">Home</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="#gallery">Gallery</a></li>
+    <li><a href="#testimonials">Reviews</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <p class="footer-copy">&copy; 2025 BLMediaFix. All rights reserved. Johannesburg, South Africa.</p>
+</footer>
+
+<script>
+  function toggleMenu() {
+    document.getElementById('mobileMenu').classList.toggle('open');
+  }
+  document.addEventListener('click', function(e) {
+    const menu = document.getElementById('mobileMenu');
+    const hamburger = document.getElementById('hamburger');
+    if (!menu.contains(e.target) && !hamburger.contains(e.target)) menu.classList.remove('open');
+  });
+
+  function handleSubmit(e) {
+    e.preventDefault();
+    document.getElementById('form-success').style.display = 'block';
+    e.target.reset();
+    setTimeout(() => { document.getElementById('form-success').style.display = 'none'; }, 5000);
+  }
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.style.opacity = '1';
+        entry.target.style.transform = 'translateY(0)';
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.service-card, .testi-card, .gallery-item, .contact-item').forEach(el => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(20px)';
+    el.style.transition = 'opacity .5s ease, transform .5s ease, border-color .25s, background .25s';
+    observer.observe(el);
+  });
+</script>
+</body>
+</html>
